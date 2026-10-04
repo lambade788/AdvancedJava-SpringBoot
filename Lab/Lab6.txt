@@ -1,0 +1,91 @@
+mysql> USE demojdbc;
+Database changed
+mysql> CREATE TABLE customer(
+    -> customer_id int PRIMARY KEY,
+    -> first_name VARCHAR(50),
+    -> last_name VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> DESC customer;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| customer_id | int         | NO   | PRI | NULL    |       |
+| first_name  | varchar(50) | YES  |     | NULL    |       |
+| last_name   | varchar(50) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> CREATE TABLE orders(
+    -> order_id int PRIMARY KEY,
+    -> customer_id INT,
+    -> order_date DATE,
+    -> total_amount DECIMAL(10,2),
+    -> FOREIGN KEY(customer_id) REFERENCES customer(customer_id)
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> DESC orders;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| order_id     | int           | NO   | PRI | NULL    |       |
+| customer_id  | int           | YES  | MUL | NULL    |       |
+| order_date   | date          | YES  |     | NULL    |       |
+| total_amount | decimal(10,2) | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> INSERT INTO customer(customer_id, first_name, last_name)
+    -> VALUES
+    -> (1,'Rahul','Lambade'),
+    -> (2,'Akash','Jadhav'),
+    -> (3,'Omkar','Kusale');
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SELECT *FROM customer;
++-------------+------------+-----------+
+| customer_id | first_name | last_name |
++-------------+------------+-----------+
+|           1 | Rahul      | Lambade   |
+|           2 | Akash      | Jadhav    |
+|           3 | Omkar      | Kusale    |
++-------------+------------+-----------+
+3 rows in set (0.00 sec)
+
+mysql> INSERT INTO orders (order_id, customer_id, order_date, total_amount)
+    -> VALUES
+    -> (101,1,'2026-08-18',2500.00),
+    -> (102,2,'2026-08-17',4300.67),
+    -> (103,3,'2026-08-17',2300.00);
+Query OK, 3 rows affected (0.01 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> SELECT *FROM orders;
++----------+-------------+------------+--------------+
+| order_id | customer_id | order_date | total_amount |
++----------+-------------+------------+--------------+
+|      101 |           1 | 2026-08-18 |      2500.00 |
+|      102 |           2 | 2026-08-17 |      4300.67 |
+|      103 |           3 | 2026-08-17 |      2300.00 |
++----------+-------------+------------+--------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     c.first_name,
+    ->     c.last_name,
+    ->     o.order_date,
+    ->     o.total_amount
+    -> FROM customer c
+    -> INNER JOIN orders o
+    ->     ON c.customer_id = o.customer_id;
++------------+-----------+------------+--------------+
+| first_name | last_name | order_date | total_amount |
++------------+-----------+------------+--------------+
+| Rahul      | Lambade   | 2026-08-18 |      2500.00 |
+| Akash      | Jadhav    | 2026-08-17 |      4300.67 |
+| Omkar      | Kusale    | 2026-08-17 |      2300.00 |
++------------+-----------+------------+--------------+
+3 rows in set (0.00 sec)

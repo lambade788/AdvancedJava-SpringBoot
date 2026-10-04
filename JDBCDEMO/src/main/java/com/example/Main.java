@@ -10,11 +10,11 @@ public class Main {
 
         Studentrepository studentrepository = new Studentrepository();
 
-        studentrepository.createUser(new Student("Akash","akash@gmail.com",23));
+//        studentrepository.createUser(new Student("Akash","akash@gmail.com",23));
 
-//        studentrepository.updateuser();
+//        studentrepository.updateuser(new Student("Akash Jadhav","akash12@gmail.com",24),3);
 
-//        studentrepository.deleteuser();
+        studentrepository.deleteuser(3);
 
 //        studentrepository.getuserbyid();
 

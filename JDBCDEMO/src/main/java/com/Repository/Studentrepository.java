@@ -3,6 +3,8 @@ package com.Repository;
 import com.model.Student;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Studentrepository {
 
@@ -64,17 +66,27 @@ public class Studentrepository {
     }
 
 
-    public void updateuser(){
+    public void updateuser(Student student,int id){
 
-        try {
-            Connection connection = DriverManager.getConnection(url, username, password);
+        String sql = """
+                     UPDATE student
+                     SET name = ?,
+                         email = ?,
+                         age = ?
+                     WHERE id = ?
+""";
 
-            Statement statement = connection.createStatement();
+        try(Connection connection = DriverManager.getConnection(url, username, password);
 
-            String sql = "UPDATE student SET age=34 " +
-                    "WHERE id=1";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ) {
 
-            int result = statement.executeUpdate(sql);
+            preparedStatement.setString(1, student.getName());
+            preparedStatement.setString(2, student.getEmail());
+            preparedStatement.setInt(3, student.getAge());
+            preparedStatement.setInt(4, id);
+
+            int result = preparedStatement.executeUpdate();
 
             if(result==1){
                 System.out.println("Updated successfully.");
@@ -87,15 +99,18 @@ public class Studentrepository {
         }
     }
 
-    public void deleteuser(){
-        try {
-            Connection connection = DriverManager.getConnection(url, username, password);
+    public void deleteuser(int id){
 
-            Statement statement = connection.createStatement();
 
-        String sql = "DELETE from student WHERE id=1";
+        String sql = "DELETE from student WHERE id=?";
 
-            int result = statement.executeUpdate(sql);
+        try(Connection connection = DriverManager.getConnection(url, username, password);
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ) {
+            preparedStatement.setInt(1, id);
+
+            int result = preparedStatement.executeUpdate();
 
             if(result==1){
                 System.out.println("Delete successfully.");
@@ -109,26 +124,83 @@ public class Studentrepository {
     }
 
 
-    public void getuserbyid(){
-        try {
-            Connection connection = DriverManager.getConnection(url, username, password);
+    public void getuserbyid(int id){
 
-            Statement statement = connection.createStatement();
+        String sql = """
+                SELECT id, name, email, age FROM student
+                WHERE id = ?
+                """;
+        try(Connection connection = DriverManager.getConnection(url, username, password);
 
-            String sql = "SELECT id,name,email,age FROM student WHERE id=2";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            ResultSet resultSet = statement.executeQuery(sql);
+            preparedStatement.setLong(1, id);
 
-            resultSet.next();
 
-            Student student = mapRow(resultSet);
-
-            System.out.println(student);
-
-            connection.close();
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                if(resultSet.next()) {
+                    Student student = mapRow(resultSet);
+                    System.out.println(student);
+                }
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+
+    public void getStudent() {
+
+        String sql = """
+                SELECT id, name, email, age FROM student
+                """;
+
+        try(
+                Connection connection = DriverManager.getConnection(url, username, password);
+                PreparedStatement preparedStatement =
+                        connection.prepareStatement(sql);
+        ) {
+
+            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Student> studentList = new ArrayList<>();
+
+                while(resultSet.next()) {
+                    Student student = mapRow(resultSet);
+                    studentList.add(student);
+                    System.out.println(student);
+                }
+            }
+        }
+        catch(SQLException e) {
+            System.out.println("Database connection failed");
+            e.printStackTrace();
+        }
+    }
+
+
+    public void completeCRUD() {
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            Statement statement = connection.createStatement();
+
+            String sql = "SELECT id, name, email, age " +
+                    "FROM student where id = 7";
+
+            boolean result = statement.execute(sql);
+
+            if(result) {
+                ResultSet resultSet = statement.getResultSet();
+            }
+            else {
+                int rowAffected = statement.getUpdateCount();
+            }
+
+            connection.close();
+        }
+        catch(SQLException e) {
+            System.out.println("Database connection failed");
+            e.printStackTrace();
         }
     }
 

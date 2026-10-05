@@ -14,7 +14,9 @@ public class Main {
 
         TeacherRepository teacherRepository = new TeacherRepository();
 
-        teacherRepository.createteacher(new Teachers("Khade","khade@gmail.com","English"));
+//        teacherRepository.createteacher(new Teachers("Khade","khade@gmail.com","English"));
+
+        teacherRepository.updateteacher(new Teachers("Rajesh Khade","rkhade@gmail.com","English"),1L);
 
 //        studentrepository.createUser(new Student("Akash","akash@gmail.com",23));
 
